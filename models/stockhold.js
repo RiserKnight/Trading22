@@ -14,15 +14,6 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   StockHold.init({
-    stockHoldID: {
-      type:DataTypes.INTEGER,
-      allowNull:false,
-      unique:true,
-      primaryKey:true,
-      validate:{
-        notNull:{msg:'User  must have a id'},
-        notEmpty:{msg:'id must not be empty'}
-      }},
     userID: {type:DataTypes.INTEGER,allowNull:false,
       references:{
        model:'Users',

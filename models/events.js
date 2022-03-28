@@ -14,19 +14,10 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Events.init({
-    eventID: {
-      type:DataTypes.INTEGER,
-      allowNull:false,
-      primaryKey:true,
-      unique:true,
-      validate:{
-        notNull:{msg:'Event must have a id'},
-        notEmpty:{msg:'id must not be empty'}
-      }},
       timeStamp:{
         type:DataTypes.STRING
       },
-      timeValue:DataTypes.INTEGER,
+      timeValue:DataTypes.DECIMAL,
       description:{
         type:DataTypes.TEXT,
         allowNull:false,

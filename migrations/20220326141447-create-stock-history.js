@@ -8,15 +8,6 @@ module.exports = {
         primaryKey: true,
         type: DataTypes.INTEGER
       },
-      historyID: {
-        type:DataTypes.INTEGER,
-        allowNull:false,
-        primaryKey:true,
-        unique:true,
-        validate:{
-          notNull:{msg:'StockHistory must have a id'},
-          notEmpty:{msg:'id must not be empty'}
-        }},
         stockID:{type:DataTypes.INTEGER,allowNull:false,references:{
           model:'Stocks',
           key:'stockID'

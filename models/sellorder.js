@@ -14,15 +14,6 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   SellOrder.init({
-    sOrderID: {
-      type:DataTypes.INTEGER,
-      allowNull:false,
-      unique:true,
-      primaryKey:true,
-      validate:{
-        notNull:{msg:'Order must have a id'},
-        notEmpty:{msg:'ID must not be empty'}
-      }},
     userID: {type:DataTypes.INTEGER,allowNull:false,references:{
       model:'Users',
       key:'userID'

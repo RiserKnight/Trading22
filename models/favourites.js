@@ -14,15 +14,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Favourites.init({
-    favID: {
-      type:DataTypes.INTEGER,
-      allowNull:false,
-      primaryKey:true,
-      unique:true,
-      validate:{
-        notNull:{msg:'User  must have a id'},
-        notEmpty:{msg:'id must not be empty'}
-      }},userID: {type:DataTypes.INTEGER,allowNull:false,validate:{
+   userID: {type:DataTypes.INTEGER,allowNull:false,validate:{
         notNull:{msg:'User  must have a id'},
         notEmpty:{msg:'id must not be empty'}
       }},

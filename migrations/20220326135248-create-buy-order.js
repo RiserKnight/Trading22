@@ -9,15 +9,6 @@ module.exports = {
         primaryKey: true,
         type: DataTypes.INTEGER
       },
-      bOrderID: {
-        type:DataTypes.INTEGER,
-        allowNull:false,
-        primaryKey:true,
-        unique:true,
-        validate:{
-          notNull:{msg:'Order must have a id'},
-          notEmpty:{msg:'ID must not be empty'}
-        }},
       userID: {type:DataTypes.INTEGER,allowNull:false,references:{
         model:'Users',
         key:'userID'

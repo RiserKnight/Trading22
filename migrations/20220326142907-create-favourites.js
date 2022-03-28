@@ -8,15 +8,7 @@ module.exports = {
         primaryKey: true,
         type: DataTypes.INTEGER
       },
-      favID: {
-        type:DataTypes.INTEGER,
-        allowNull:false,
-        unique:true,
-        primaryKey:true,
-        validate:{
-          notNull:{msg:'User  must have a id'},
-          notEmpty:{msg:'id must not be empty'}
-        }},userID: {type:DataTypes.INTEGER,allowNull:false,validate:{
+      userID: {type:DataTypes.INTEGER,allowNull:false,validate:{
           notNull:{msg:'User  must have a id'},
           notEmpty:{msg:'id must not be empty'}
         }},

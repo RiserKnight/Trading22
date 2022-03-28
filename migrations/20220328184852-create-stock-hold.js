@@ -8,15 +8,6 @@ module.exports = {
         primaryKey: true,
         type: DataTypes.INTEGER
       },
-      stockHoldID: {
-        type:DataTypes.INTEGER,
-        allowNull:false,
-        primaryKey:true,
-        unique:true,
-        validate:{
-          notNull:{msg:'User  must have a id'},
-          notEmpty:{msg:'id must not be empty'}
-        }},
         userID: {type:DataTypes.INTEGER,allowNull:false,references:{
         model:'Users',
         key:'userID'
