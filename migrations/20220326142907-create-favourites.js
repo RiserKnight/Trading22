@@ -6,6 +6,7 @@ module.exports = {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
+        unique:true,
         type: DataTypes.INTEGER
       },
       userID: {type:DataTypes.INTEGER,allowNull:false,validate:{

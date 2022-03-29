@@ -1,0 +1,61 @@
+
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+    <script src="/plugins/jquery/jquery.js"></script>
+    <script src="/plugins/velocity/velocity.js"></script>
+    <script src="/plugins/velocity/velocity.ui.js"></script>
+    <script src="/plugins/bootstrap/js/bootstrap.js"></script>
+    <script src="/plugins/chosen/chosen.jquery.js"></script>
+    <script src="/plugins/slider/js/bootstrap-slider.js"></script>
+    <script src="/plugins/filestyle/bootstrap-filestyle.js"></script>
+    <script src="/plugins/animo/animo.js"></script>
+    <script src="/plugins/sparklines/jquery.sparkline.js"></script>
+    <script src="/plugins/slimscroll/jquery.slimscroll.js"></script>
+    <script src="/plugins/datatable/media/js/jquery.dataTables.js"></script>
+    <script src="/plugins/datatable/extensions/datatable-bootstrap/js/dataTables.bootstrap.js"></script>
+    <script src="/plugins/datatable/extensions/datatable-bootstrap/js/dataTables.bootstrapPagination.js"></script>
+    <script src="/tradify/highcharts.js"></script>
+    <script src="/tradify/exporting.js"></script>
+    <script src="/plugins/datatable/extensions/ColVis/js/dataTables.colVis.js"></script>
+    <!--[if lt IE 8]><script src="js/excanvas.min.js"></script><![endif]-->
+    <script src="/js/tradify.js"></script>
+   
+   <script>
+        $(document).ready(function() {
+            // Candlestick
+            $.getJSON('tradify/data.json', function(data) {
+
+                // create the chart
+                Highcharts.stockChart('candlestickChart', {
+
+                    chart: {},
+
+
+                    rangeSelector: {
+                        selected: 1
+                    },
+
+                    series: [{
+                        type: 'candlestick',
+                        name: 'SC-BTC',
+                        data: data,
+                        dataGrouping: {
+                            units: [
+                                [
+                                    'week', // unit name
+                                    [1] // allowed multiples
+                                ],
+                                [
+                                    'month', [1, 2, 3, 4, 6]
+                                ]
+                            ]
+                        }
+                    }]
+                });
+            });
+        });
+    </script>
+
+
+</body>
+
+</html>

@@ -3,7 +3,6 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
 const dbFunct = require(__dirname+"/database.js");
-const date = require(__dirname+"/date.js")
 const {sequelize}=require('./models')
 
 const app = express();
@@ -14,9 +13,13 @@ app.use(bodyParser.urlencoded({
 }));
 
 app.get("/",(req,res)=>{
-  console.log(date.getDate());
-  res.sendFile(__dirname+"/views/index.html");
+  res.sendFile(__dirname+"/views/Main.html");
 });
+
+app.get("/Dashboard",(req,res)=>{
+  res.render(__dirname+"/views/userSpecific/dashboard");
+});
+
 app.get('/users',async(req,res)=>{
   console.log(await dbFunct.storeUser(205,"Admin",100));
   res.send("Ja ");
