@@ -1,8 +1,7 @@
 const {sequelize,User,Stock,Events,Favourites,SellOrder,BuyOrder,StockHistory,StockHold}=require('./models')
 
 exports.storeUser=async(userID,name,funds)=>{
-    await sequelize.authenticate();
-    console.log("db connected");
+   
     try {
         const demoUser=await User.create({userID,name,funds})
     } catch (err) {
@@ -12,8 +11,7 @@ exports.storeUser=async(userID,name,funds)=>{
 }
 
 exports.storeStock=async(stockID,stockName,ltp,description)=>{
-    await sequelize.authenticate();
-    console.log("db connected");
+  
     try {
         const demoUser=await Stock.create({stockID,stockName,ltp,description})
     } catch (err) {
@@ -23,8 +21,7 @@ exports.storeStock=async(stockID,stockName,ltp,description)=>{
 }
 
 exports.storeEvent=async(timeStamp,timeValue,description)=>{
-    await sequelize.authenticate();
-    console.log("db connected");
+  
     try {
         const demoUser=await Events.create({timeStamp,timeValue,description})
     } catch (err) {
@@ -34,8 +31,7 @@ exports.storeEvent=async(timeStamp,timeValue,description)=>{
 }
 
 exports.storeFav=async(userID,stockID)=>{
-    await sequelize.authenticate();
-    console.log("db connected");
+
     try {
         const demoUser=await Favourites.create({userID,stockID})
     } catch (err) {
@@ -45,8 +41,7 @@ exports.storeFav=async(userID,stockID)=>{
 }
 
 exports.storeBuyOrder=async(userID,stockID,quantity,price)=>{
-    await sequelize.authenticate();
-    console.log("db connected");
+ 
     try {
         const demoUser=await SellOrder.create({userID,stockID,quantity,price})
     } catch (err) {
@@ -55,8 +50,7 @@ exports.storeBuyOrder=async(userID,stockID,quantity,price)=>{
     return "Buy Order Sucessfully stored";
 }
 exports.storeSellOrder=async(userID,stockID,quantity,price)=>{
-    await sequelize.authenticate();
-    console.log("db connected");
+  
     try {
         const demoUser=await BuyOrder.create({userID,stockID,quantity,price})
     } catch (err) {
@@ -66,8 +60,7 @@ exports.storeSellOrder=async(userID,stockID,quantity,price)=>{
 }
 
 exports.storeStockHold=async(userID,stockID,quantity,avgPrice)=>{
-    await sequelize.authenticate();
-    console.log("db connected");
+
     try {
         const demoUser=await StockHold.create({userID,stockID,quantity,avgPrice})
     } catch (err) {
@@ -77,8 +70,7 @@ exports.storeStockHold=async(userID,stockID,quantity,avgPrice)=>{
 }
 
 exports.storeStockHistory=async(stockID,ltp,dateP)=>{
-    await sequelize.authenticate();
-    console.log("db connected");
+
     try {
         const demoUser=await StockHistory.create({stockID,ltp,dateP})
     } catch (err) {
