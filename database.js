@@ -1,5 +1,9 @@
 const {sequelize,User,Stock,Events,Favourites,SellOrder,BuyOrder,StockHistory,StockHold}=require('./models')
 
+
+/*            ****   ***********Create Operations*****************                     */
+
+
 exports.storeUser=async(userID,name,funds)=>{
    
     try {
@@ -43,7 +47,7 @@ exports.storeFav=async(userID,stockID)=>{
 exports.storeBuyOrder=async(userID,stockID,quantity,price)=>{
  
     try {
-        const demoUser=await SellOrder.create({userID,stockID,quantity,price})
+        const demoUser=await BuyOrder.create({userID,stockID,quantity,price})
     } catch (err) {
         console.log(err);
     }
@@ -52,7 +56,7 @@ exports.storeBuyOrder=async(userID,stockID,quantity,price)=>{
 exports.storeSellOrder=async(userID,stockID,quantity,price)=>{
   
     try {
-        const demoUser=await BuyOrder.create({userID,stockID,quantity,price})
+        const demoUser=await SellOrder.create({userID,stockID,quantity,price})
     } catch (err) {
         console.log(err);
     }
@@ -78,3 +82,41 @@ exports.storeStockHistory=async(stockID,ltp,dateP)=>{
     }
     return "Buy Order Sucessfully stored";
 }
+
+/* ************************* Read Operations ***************************** */
+
+exports.getBuyOrders=async(stockID)=>{
+let orders=[];
+
+    try{
+        const ordersQ=await BuyOrder.findAll({
+            where:{stockID:stockID}
+        });
+        ordersQ.forEach((order)=>{
+            orders.push({quantity: order.dataValues.quantity,price: order.dataValues.price});
+        });
+       return orders;
+       
+        } 
+          catch(err){
+            console.log(err);
+                }
+}
+
+exports.getSellOrders=async(stockID)=>{
+    let orders=[];
+    
+        try{
+            const ordersQ=await SellOrder.findAll({
+                where:{stockID:stockID}
+            });
+            ordersQ.forEach((order)=>{
+                orders.push({quantity: order.dataValues.quantity,price: order.dataValues.price});
+            });
+           return orders;
+           
+            } 
+              catch(err){
+                console.log(err);
+                    }
+    }

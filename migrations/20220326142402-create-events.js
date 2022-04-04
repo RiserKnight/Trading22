@@ -12,7 +12,6 @@ module.exports = {
         timeStamp:{
           type:DataTypes.STRING
         },
-        timeValue:DataTypes.DECIMAL,
         description:{
           type:DataTypes.TEXT,
           allowNull:false,

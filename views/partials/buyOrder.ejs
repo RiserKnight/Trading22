@@ -1,0 +1,62 @@
+<!-- BUY ORDEER-->
+<div class="row">
+    <div class="col-lg-6">
+        <div class="panel panel-default">
+        
+                <div class="panel-heading">Buy stock
+                    <a href="#" data-perform="panel-collapse" data-toggle="tooltip" title="Collapse Panel"
+                        class="pull-right">
+                        <em class="fa fa-minus"></em>
+                    </a>
+                </div>
+                <form action="/buyOrder/<%=stockID%>" method="post">
+                <div class="pannel panel-body">
+                    
+                    <label class="col-sm-2 control-label m-t-9">Units</label>
+                    <div class="input-group col-sm-10 m-b">
+                        <span class="input-group-addon btn-primary group-btn-hover"><i
+                                class="fa fa-angle-double-up"></i> Max</span>
+                        <input id="buyUnit" type="number" name="unit" onchange="totalPrice()" placeholder="00"
+                            class="form-control text-right">
+                    </div>
+                    <div class="m-t-9">
+                        <label class="col-sm-2 control-label m-t-9">Bid</label>
+                        <div class="input-group m-b">
+                            <div class="input-group-btn">
+                                <button type="button" data-toggle="dropdown"
+                                    class="btn btn-default dropdown-toggle">Price
+                                </button>
+
+                            </div>
+                            <input type="number" id="buyPrice" onchange="totalPrice()" step=".01" name="price"
+                                class="form-control text-right" placeholder="0.00">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="btn-group m-t-9 col-md-6 col-sm-12 col-xs-12">
+
+                            <ul role="menu" class="dropdown-menu">
+                                <li><a href="javascript:void(0);">Place order</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="m-t-9">
+                        <label class="col-sm-2 control-label m-t-9">Total</label>
+                        <div class="input-group col-sm-10 m-b">
+                            <span class="input-group-addon"><i class="fa-solid fa-indian-rupee-sign"></i></span>
+                            <input type="text" id="buyTotal" placeholder="0000" class="form-control text-right"
+                                readonly>
+                        </div>
+                    </div>
+                    <!--  Button    -->
+                    <div class="m-t-9">
+                        <button type="submit" class="btn btn-primary btn-block"><i class="fa fa-plus"></i> Buy
+                            stock</button>
+                    </div>
+        
+                 </div>
+                </form>
+    </div>
+</div>
+<!-- BUY ORDEER-->

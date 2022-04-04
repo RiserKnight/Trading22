@@ -4,12 +4,10 @@
 
 <section>
     <section class="main-content">
-        <h3>Dashboard
-        </h3>
         <div class="row">
         <div class="col-md-9">
 
-<%- include('partials/market') %>            
+          
 
 
 <!-- # 3 Chart -->
@@ -18,7 +16,7 @@
         <div class="panel panel-default">
             <div class="panel-collapse">
                 <div class="panel-body">
-                    <h4>ACC Cement Stock</h4>
+                    <h4><%=stockName%></h4>
                     <div id="candlestickChart" class="h-500">
 
                     </div>
@@ -29,14 +27,13 @@
 </div>
 <!-- # 3 Chart -->
 
-<%- include('partials/stockStatus') %>
 
-<%- include('partials/news') %>
 
-<%- include('partials/buyOrder') %>
+<%- include('partials/buyOrder.ejs',{stockID:stockID}); %>
+
 
 <%- include('partials/sellOrder') %>
 
-<%- include('partials/marketOrder') %>
+<%- include('partials/marketOrder.ejs',{buyOrders:buyOrders,sellOrders:sellOrders}); %>
 
 <%- include('partials/footer') %>

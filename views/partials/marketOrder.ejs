@@ -1,0 +1,95 @@
+ <!-- Market Orders -->
+ <div class="row">
+
+     <div class="col-md-12">
+         <div class="panel panel-default">
+             <div class="panel-heading">Market Orders
+                 <a href="javascript:void(0);" data-perform="panel-collapse" data-toggle="tooltip" title=""
+                     class="pull-right" data-original-title="Collapse Panel">
+                     <em class="fa fa-minus"></em>
+                 </a>
+             </div>
+
+             <div class="panel-body">
+                 <div class="row">
+                     <div class="col-md-6 col-sm-12">
+                         <div class="table-responsive m-t-10">
+                             <table class="table table-striped table-hover table-condensed">
+                                 <thead>
+                                     <tr>
+                                         <th>
+                                             Buy Orders
+                                         </th>
+                                         <th>
+                                             Volume
+                                         </th>
+                                       
+                                         <th>
+                                             Price
+                                         </th>
+                                     </tr>
+                                 </thead>
+                                 <tbody>
+                                     <% buyOrders.forEach(function(order){ %>
+                                        <tr>
+                                            <td><i class="fa-solid fa-sort-up"></i></td>
+                                            
+                                            <td class="number"><%=order.quantity%></td>
+                                          
+                                            <td class="number cursor-pointer"><%=order.price%></td>
+                                            
+                                        </tr>
+                                    <%});%>
+                                 </tbody>
+                             </table>
+                         </div>
+                         <table class="w-100-p">
+
+                         </table>
+
+
+                     </div>
+                     <div class="col-md-6 col-sm-12">
+                         <div class="table-responsive">
+                             <table class="table table-striped table-hover table-condensed">
+                                 <thead>
+                                     <tr>
+                                        <th>
+                                            Sell Orders
+                                        </th>
+                                         <th>
+                                             Volume
+                                         </th>
+                                         <th>
+                                             Price
+                                         </th>
+                                     </tr>
+                                 </thead>
+                                 <tbody>
+                                    <% sellOrders.forEach(function(order){ %>
+                                        <tr>
+                                            <td><i class="fa-solid fa-sort-down"></i></td>
+                                            <td class="number"><%=order.quantity%></td>
+                                          
+                                            <td class="number cursor-pointer"><%=order.price%></td>
+                                            
+                                        </tr>
+                                    <%});%>
+                                 </tbody>
+                             </table>
+                         </div>
+                         <table class="w-100-p">
+
+                         </table>
+
+                     </div>
+                 </div>
+             </div>
+         </div>
+     </div>
+
+
+ </div>
+ </section>
+ </section>
+ </section>
