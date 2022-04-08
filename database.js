@@ -1,4 +1,4 @@
-const {sequelize,User,Stock,Events,Favourites,SellOrder,BuyOrder,StockHistory,StockHold}=require('./models')
+const {sequelize,TransactionHistory,User,Stock,Events,Favourites,SellOrder,BuyOrder,StockHistory,StockHold}=require('./models')
 
 
 /*            ****   ***********Create Operations*****************                     */
@@ -80,9 +80,17 @@ exports.storeStockHistory=async(stockID,ltp,dateP)=>{
     } catch (err) {
         console.log(err);
     }
-    return "Buy Order Sucessfully stored";
+    return "Stock History Sucessfully stored";
 }
+exports.storeTransactionHistory=async(buyerID,sellerID,stockID,quantity,price,amount,timeStamp)=>{
 
+    try {
+        const demoUser=await TransactionHistory.create({buyerID,sellerID,stockID,quantity,price,amount,timeStamp})
+    } catch (err) {
+        console.log(err);
+    }
+    return "Transaction History Sucessfully stored";
+}
 /* ************************* Read Operations ***************************** */
 
 exports.getBuyOrders=async(stockID)=>{
@@ -90,10 +98,11 @@ let orders=[];
 
     try{
         const ordersQ=await BuyOrder.findAll({
+            order:[["price","DESC"]],
             where:{stockID:stockID}
         });
         ordersQ.forEach((order)=>{
-            orders.push({quantity: order.dataValues.quantity,price: order.dataValues.price});
+            orders.push(order.dataValues);
         });
        return orders;
        
@@ -108,10 +117,11 @@ exports.getSellOrders=async(stockID)=>{
     
         try{
             const ordersQ=await SellOrder.findAll({
+                order:[["price","ASC"]],
                 where:{stockID:stockID}
             });
             ordersQ.forEach((order)=>{
-                orders.push({quantity: order.dataValues.quantity,price: order.dataValues.price});
+                orders.push(order.dataValues);
             });
            return orders;
            
@@ -120,3 +130,198 @@ exports.getSellOrders=async(stockID)=>{
                 console.log(err);
                     }
     }
+
+exports.getStock=async(stockID)=>{
+        try{
+            const demo=await Stock.findOne({
+                where:{stockID:stockID}
+            });
+            
+           return demo.dataValues;
+           
+            } 
+              catch(err){
+                console.log(err);
+                    }
+    }
+    
+exports.getUser=async(userID)=>{
+            try{
+                const demo=await User.findOne({
+                    where:{userID:userID}
+                });
+                
+               return demo;
+               
+                } 
+                  catch(err){
+                    console.log(err);
+                        }
+        }
+exports.getStocks=async()=>{
+            let stocks=[];
+            
+                try{
+                    const demo=await Stock.findAll({
+                    });
+                    demo.forEach((order)=>{
+                        stocks.push(order.dataValues);
+                    });
+                    return stocks;
+                   
+                    } 
+                      catch(err){
+                        console.log(err);
+                            }
+            }
+exports.checkUserID=async(userID)=>{
+                try{
+                    let count=0
+                    count=await User.count({
+                        where:{userID:userID}
+                    });
+                    let res=false;
+                    if(count>0){res=true;}
+                    return res;
+                    } 
+                      catch(err){
+                        console.log(err);
+                            }
+            }
+
+exports.getUserStockQ=async(userID,stockID)=>{
+                
+                    try{
+                        const demo=await StockHold.findOne({
+                            where:{userID:userID,stockID:stockID}
+                        });
+                        
+                        return demo.quantity;
+                       
+                        } 
+                          catch(err){
+                            console.log(err);
+                                }
+                }
+exports.getUserStock=async(userID,stockID)=>{
+                
+                    try{
+                        const demo=await StockHold.findOne({
+                            where:{userID:userID,stockID:stockID}
+                        });
+                        
+                        return demo;
+                       
+                        } 
+                          catch(err){
+                            console.log(err);
+                                }
+                }
+exports.checkUserStock=async(userID,stockID)=>{
+
+                        try{
+                            let count=0;
+                            count=await StockHold.count({
+                                where:{userID:userID,stockID:stockID}
+                            });
+                            let res=false;
+                            if(count>0){res=true;}
+                            return res;
+                           
+                            } 
+                              catch(err){
+                                console.log(err);
+                                    }
+                    }
+/* ************************* Delete Operations ***************************** */
+
+exports.delSellOrder=async(orderID)=>{
+    
+        try{
+            const orderQ=await SellOrder.findOne({
+                where:{id:orderID}
+            });
+             await orderQ.destroy();
+           
+            } 
+              catch(err){
+                console.log(err);
+                    }
+    }
+exports.delBuyOrder=async(orderID)=>{
+    
+        try{
+            const orderQ=await BuyOrder.findOne({
+                where:{id:orderID}
+            });
+             await orderQ.destroy();
+           
+            } 
+              catch(err){
+                console.log(err);
+                    }
+    }
+
+
+/* ************************* Update Operations ***************************** */
+
+exports.updateBuyOrder=async(buyID,Q)=>{
+    try{
+        const orderQ=await BuyOrder.update(
+            {quantity: Q},
+            {where:{id:buyID}
+        });
+    }
+    catch(err){
+        console.log(err);
+            }
+}
+exports.updateSellOrder=async(sellID,Q)=>{
+    try{
+        const orderQ=await SellOrder.update(
+            {quantity: Q},
+            {where:{id:sellID}
+        });
+    }
+    catch(err){
+        console.log(err);
+            }
+}
+exports.updateStockHold=async(userID,stockID,Q,avgPrice)=>{
+
+    try{
+        const demo=await StockHold.update(
+            {quantity:Q,avgPrice:avgPrice},
+            {where:{userID:userID,stockID:stockID}}
+            );
+
+       
+        } 
+          catch(err){
+            console.log(err);
+                }
+}
+
+exports.updateFunds=async(userID,funds)=>{
+    try{
+         const demo= await User.update(
+             {funds:funds},
+             {where:{userID:userID}}
+         );
+    }
+    catch(err){
+        console.log(err);
+            }
+}
+
+exports.updateLTP=async(stockID,LTP)=>{
+    try{
+         const demo= await Stock.update(
+             {ltp:LTP},
+             {where:{stockID:stockID}}
+         );
+    }
+    catch(err){
+        console.log(err);
+            }
+}

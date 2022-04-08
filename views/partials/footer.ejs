@@ -23,7 +23,7 @@
    <script>
         $(document).ready(function() {
             // Candlestick
-            $.getJSON('tradify/data.json', function(data) {
+            $.getJSON('/tradify/data.json', function(data) {
 
                 // create the chart
                 Highcharts.stockChart('candlestickChart', {

@@ -17,6 +17,8 @@
             <div class="panel-collapse">
                 <div class="panel-body">
                     <h4><%=stockName%></h4>
+                    <h6><%=LTP%></h6>
+                    <input type="number" value="<%=LTP%>" id="stock_LTP" style="display:none;">
                     <div id="candlestickChart" class="h-500">
 
                     </div>
@@ -29,10 +31,11 @@
 
 
 
+
 <%- include('partials/buyOrder.ejs',{stockID:stockID}); %>
 
 
-<%- include('partials/sellOrder') %>
+<%- include('partials/sellOrder.ejs',{stockID:stockID}); %>
 
 <%- include('partials/marketOrder.ejs',{buyOrders:buyOrders,sellOrders:sellOrders}); %>
 

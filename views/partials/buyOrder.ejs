@@ -16,7 +16,7 @@
                     <div class="input-group col-sm-10 m-b">
                         <span class="input-group-addon btn-primary group-btn-hover"><i
                                 class="fa fa-angle-double-up"></i> Max</span>
-                        <input id="buyUnit" type="number" name="unit" onchange="totalPrice()" placeholder="00"
+                        <input id="buyUnit" type="number" name="unit" onchange="totalBPrice()" placeholder="00"
                             class="form-control text-right">
                     </div>
                     <div class="m-t-9">
@@ -28,7 +28,7 @@
                                 </button>
 
                             </div>
-                            <input type="number" id="buyPrice" onchange="totalPrice()" step=".01" name="price"
+                            <input type="number" id="buyPrice" onchange="totalBPrice()" step=".01" name="price"
                                 class="form-control text-right" placeholder="0.00">
                         </div>
                     </div>
@@ -45,7 +45,7 @@
                         <label class="col-sm-2 control-label m-t-9">Total</label>
                         <div class="input-group col-sm-10 m-b">
                             <span class="input-group-addon"><i class="fa-solid fa-indian-rupee-sign"></i></span>
-                            <input type="text" id="buyTotal" placeholder="0000" class="form-control text-right"
+                            <input type="text" id="buyTotal" name="totalBP" placeholder="0000" class="form-control text-right"
                                 readonly>
                         </div>
                     </div>

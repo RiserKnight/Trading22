@@ -20,13 +20,19 @@
             <li><a href="about_us.html">About Us</a></li>
         </ul>
         <a href="/register" class="btn">Register</a>
-        <a href="/login" class="btn">Login</a>    
-    </nav>
+        </nav>
         
-        <div class="content">
-            <h1>BUY & <br>Sell <span>Stocks</span></h1>
-            <p>Worlds Largest Stock exchange<br> platform now available</p> 
-            <a href="#" class="btn">Explore More</a>
+        <div class="content multiUse">
+            <form action="/register" method="post">
+             <label for="userName">Name</label>
+             <input type="text" name="userName">
+             <label for="userID">ID</label>
+             <input type="text" name="userID">
+             <label for="password">Password</label>
+             <input type="text" name="password">
+             <button type="submit">Submit</button>
+            </form>
+
         </div>
 
 

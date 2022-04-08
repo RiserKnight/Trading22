@@ -1,5 +1,6 @@
 <%- include('partials/header') %>
-
-<a href="/stock/1001"><h1>ACC Cement</h1></a>
-
+<h4>User: <%=user%></h4>
+<% stocks.forEach(function(stock){ %>
+<a href="/stock/<%=stock.stockID%>"><h1><%=stock.stockName%></h1></a>
+<%});%>
 <%- include('partials/footer') %>
