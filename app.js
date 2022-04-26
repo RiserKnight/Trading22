@@ -273,7 +273,13 @@ app.listen(3000, async()=> {
     await sequelize.authenticate();
     console.log("db connected");
     console.log(Date.getDate());
-    /*UserDummy.create({
+
+    //Run once
+ /*
+    dbFunct.storeStock(1001,"Acc Cement",100,"Nhi bataunga");
+    dbFunct.storeStock(1002,"Reliance",150,"Nhi bataunga");
+    dbFunct.storeStock(1003,"Dabur",200,"Nhi bataunga");
+    UserDummy.create({
       userID: 205121002,
       userName: "Aayush Gupta",
       userEmail:"205121002@nitt.edu",
@@ -288,40 +294,49 @@ app.listen(3000, async()=> {
     });
     dbFunct.storeUser(205121038,"Deepak Singh",100000);
     UserDummy.create({
-      userID: 20512143,
+      userID: 205121043,
       userName: "Himanshu Sathe",
       userEmail:"205121043@nitt.edu",
       password: "789"
     });
     dbFunct.storeUser(205121043,"Himanshu Sathe",100000);
     UserDummy.create({
-      userID: 001,
+      userID: 2001,
       userName: "Admin A",
       userEmail:"001@nitt.edu",
       password: "1234"
     });
+    dbFunct.storeUser(2001,"Admin A",100000000);
+  
     UserDummy.create({
-      userID: 002,
+      userID: 2002,
       userName: "Admin B",
       userEmail:"002@nitt.edu",
       password: "4567"
     });
+    dbFunct.storeUser(2002,"Admin B",100000000);
+    
     UserDummy.create({
-      userID: 003,
+      userID: 2003,
       userName: "Admin C",
       userEmail:"003@nitt.edu",
       password: "7890"
-    });*/
-    //dbFunct.storeStockHold(2001,1001,2000,50);
+    });
+    dbFunct.storeUser(2003,"Admin C",100000000);
+
+    dbFunct.storeStockHold(2001,1001,2000,100);
+    dbFunct.storeStockHold(2002,1001,1000,110);
+    dbFunct.storeStockHold(2003,1001,500,90);
+    dbFunct.storeStockHold(205121002,1001,200,100);
+    dbFunct.storeStockHold(205121038,1001,200,100);
+    dbFunct.storeStockHold(205121043,1001,200,100);
+     */
+
+
     //Stocks Acc Cement,Reliance,Dabur 1001 1002 1003
     //User Admin A,Admin B,Admin C, 2001 2002 2003
-/*
-    dbFunct.storeUser(2001,"Admin A",100000000);
-    dbFunct.storeUser(2002,"Admin B",100000000);
-    dbFunct.storeUser(2003,"Admin C",100000000);
-    dbFunct.storeStock(1001,"Acc Cement",100,"Nhi bataunga");
-    dbFunct.storeStock(1002,"Reliance",150,"Nhi bataunga");
-    dbFunct.storeStock(1003,"Dabur",200,"Nhi bataunga");
-*/
+
+    
+
 });
   
