@@ -1,5 +1,6 @@
 <%- include('partials/header') %>
 <h4>User: <%=user%></h4>
+<h4>Name: <%=userName%></h4>
 <% stocks.forEach(function(stock){ %>
 <a href="/stock/<%=stock.stockID%>"><h1><%=stock.stockName%></h1></a>
 <%});%>

@@ -1,7 +1,9 @@
-{
+const fs = require('fs');
+require('dotenv').config();
+module.exports ={
   "development": {
     "username": "postgres",
-    "password": "205121002",
+    "password": process.env.DB_PASS,
     "database": "Trading",
     "host": "127.0.0.1",
     "dialect": "postgres"

@@ -1,40 +1,52 @@
 <!DOCTYPE html>
-<html >
-
-<head>
+ 
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trading pcc</title>
-    <link rel="stylesheet"  href="/css/style.css">
-</head>
-
-<body>
-    <div class="container">
-        <nav>
-            <img src="/images/logo.png" class="logo">
-        <ul>
-            <li><a href="/Dashboard">Dashboard</a></li>
-            <li><a href="#">Instructions</a></li>
-            <li><a href="#">Market</a></li>
-            <li><a href="#">Leaderboard</a></li>
-            <li><a href="#">Contact Us</a></li>
-            <li><a href="about_us.html">About Us</a></li>
-        </ul>
-        <a href="/register" class="btn">Register</a>
-        </nav>
-        
-        <div class="content">
-            <form action="/login" method="post">
-             <label for="dashUser"></label>
-             <input type="text" name="dashUser">
-             <button type="submit">Submit</button>
-            </form>
-
-        </div>
+    <link rel="stylesheet" href="/css/LoginStyle.css">
+       </head>
+  <body>
 
 
-    </div>
+<div class="area" >
+          <ul class="circles">
+                  <li></li>
+                  <li></li>
+                  <li></li>
+                  <li></li>
+                  <li></li>
+                  <li></li>
+                  <li></li>
+                  <li></li>
+                  <li></li>
+                  <li></li>
+          </ul>
+  </div >
+     
+    <div class="main-section">
+      <div class="content-section">
+      <div class="head-section">
+      <h3>Welcome!</h3>
+      </div>
+      <div class="body-section">
+      <form action="/login" method="post">
+      <div class="form-input">
+      <input type="text" name="userID" placeholder="Roll no">
+      </div>
+      <div class="form-input">
+        <label for="password"></label>
+        <input type="password" name="password" placeholder="Password"><br />
+      </div>
+      
+      <div class="form-input">
+       <button type="submit" class="btn-submit">Login</button>
+      </div>
+      </form>
+      </div>
+      </div>
+      </div>
     
-</body>
+     
+  </body>
 </html>
-
-

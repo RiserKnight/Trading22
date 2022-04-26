@@ -4,10 +4,13 @@ const bodyParser = require("body-parser");
 const ejs = require("ejs");
 const dbFunct = require(__dirname+"/database.js");
 const Date = require(__dirname+"/date.js");
-const {sequelize}=require('./models');
+const {sequelize,UserDummy}=require('./models');
 const { delBuyOrder } = require("./database");
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
+require('dotenv').config();
 
-let dashUser=2001;
+
 const app = express();
 app.use(express.static(__dirname+"/public"));
 app.set('view engine', 'ejs');
@@ -17,19 +20,58 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json());
 
 
+// initialize cookie-parser to allow us access the cookies stored in the browser. 
+app.use(cookieParser());
+
+// initialize express-session to allow us track the logged-in user across sessions.
+app.use(session({
+    key: 'user_sid',
+    secret: process.env.SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        expires: 3600000
+    }
+}));
+
+// This middleware will check if user's cookie is still saved in browser and user is not set, then automatically log the user out.
+// This usually happens when you stop your express server after login, your cookie still remains saved in the browser.
+app.use((req, res, next) => {
+  if (req.cookies.user_sid && !req.session.user) {
+      res.clearCookie('user_sid');        
+  }
+  next();
+});
+
+var userContent = {userID: 0,userName: ' ',userEmail:' ', status: false}; 
+
+// middleware function to check for logged-in users
+var sessionChecker = (req, res, next) => {
+  if (req.session.user && req.cookies.user_sid) {
+  
+      res.redirect("/");
+  } else {
+      next();
+  }    
+};
+
 app.get("/",(req,res)=>{
   res.sendFile(__dirname+"/views/Main.html");
 });
 
 app.get("/Dashboard",async(req,res)=>{
-  const stocks= await dbFunct.getStocks();
-  const result=await dbFunct.checkUserID(dashUser);
-  if(result){
-    res.render(__dirname+"/views/dashboard",{stocks:stocks,user: dashUser});
-  }
-  else{
-    res.redirect("/login")
-  }
+
+  if (req.session.user && req.cookies.user_sid) {
+    const stocks= await dbFunct.getStocks();
+    userContent.status = true; 
+    userContent.userID = req.session.user.userID; 
+    userContent.userEmail = req.session.user.userEmail;
+    userContent.userName = req.session.user.userName; 
+    console.log(JSON.stringify(req.session.user)); 
+    res.render(__dirname+"/views/dashboard",{stocks:stocks,user: userContent.userID,userName: userContent.userName});
+    } else {
+        res.redirect('/login');
+    }
   
 });
 
@@ -42,7 +84,7 @@ const LTP = stock.ltp;
 const stockName = stock.stockName;
 
 res.render(__dirname+"/views/stockScreen",
-{stockID:req.params.stockID,stockName: stockName,LTP:LTP,buyOrders:bOrders,sellOrders:sOrders})
+{stockID:req.params.stockID,stockName: stockName,LTP:LTP,buyOrders:bOrders,sellOrders:sOrders,userName: userContent.userName})
 });
 
 app.get('/users',async(req,res)=>{
@@ -52,35 +94,67 @@ app.get('/users',async(req,res)=>{
 
 app.post("/buyOrder/:stockID",async(req,res)=>{
   const amount=req.body.totalBP;
-  const user=await dbFunct.getUser(dashUser);
+  const user=await dbFunct.getUser(userContent.userID);
   if(user.funds>=amount){
-  await dbFunct.storeBuyOrder(dashUser,req.params.stockID,req.body.unit,req.body.price);
+  await dbFunct.storeBuyOrder(userContent.userID,req.params.stockID,req.body.unit,req.body.price);
   }
-  res.redirect("/stock/"+req.params.stockID);
+  const bOrders = await dbFunct.getBuyOrders(stockID);
+  const sOrders = await dbFunct.getSellOrders(stockID);
+  if(bOrders[0].price>=sOrders[0].price)
+  res.redirect("/transaction/"+stockID);
+  else
+  res.redirect("/stock/"+stockID);
 });
 
 app.post("/sellOrder/:stockID",async(req,res)=>{
   const stockID=req.params.stockID;
-  const Q= await dbFunct.getUserStockQ(dashUser,stockID);
+  const Q= await dbFunct.getUserStockQ(userContent.userID,stockID);
   if(Q>=req.body.unit){
-  await dbFunct.storeSellOrder(dashUser,stockID,req.body.unit,req.body.price);
+  await dbFunct.storeSellOrder(userContent.userID,stockID,req.body.unit,req.body.price);
   }
+  const bOrders = await dbFunct.getBuyOrders(stockID);
+  const sOrders = await dbFunct.getSellOrders(stockID);
+  if(bOrders[0].price>=sOrders[0].price)
+  res.redirect("/transaction/"+stockID);
+  else
   res.redirect("/stock/"+stockID);
 });
-app.get("/login",(req,res)=>{
-  res.sendFile(__dirname+"/views/Login.html");
-});
 
-app.post("/login",async(req,res)=>{
-dashUser=req.body.dashUser;
-const result=await dbFunct.checkUserID(dashUser);
-if(result){
-res.redirect("/Dashboard");
-}
-else{
-  res.send("Incorrect ID");
-}
+
+
+
+app.route("/login")
+.get(sessionChecker, (req, res) => {
+    res.sendFile(__dirname + '/views/login.html');
+})
+.post((req, res) => {
+    var userID = req.body.userID,
+        password = req.body.password;
+
+    UserDummy.findOne({ where: { userID: userID } }).then(function (user) {
+
+        if (!user) {
+            res.redirect("/login");
+        } else if (!user.validPassword(password)) {
+            res.redirect("/login");
+        } else {
+            req.session.user = user.dataValues;
+            res.redirect("/Dashboard");
+        }
+    });
 });
+   // route for user logout
+   app.get('/logout', (req, res) => {
+    if (req.session.user && req.cookies.user_sid) {
+    userContent.status = false; 
+        res.clearCookie('user_sid');
+    console.log(JSON.stringify(userContent)); 
+        res.redirect('/');
+    } else {
+        res.redirect('/login');
+    }
+  });
+
 app.get("/transaction/:stockID",async(req,res)=>{
   const stockID=req.params.stockID;
   const bOrders = await dbFunct.getBuyOrders(stockID);
@@ -199,7 +273,45 @@ app.listen(3000, async()=> {
     await sequelize.authenticate();
     console.log("db connected");
     console.log(Date.getDate());
-
+    /*UserDummy.create({
+      userID: 205121002,
+      userName: "Aayush Gupta",
+      userEmail:"205121002@nitt.edu",
+      password: "123"
+    });
+    dbFunct.storeUser(205121002,"Aayush Gupta",100000);
+    UserDummy.create({
+      userID: 205121038,
+      userName: "Deepak Singh",
+      userEmail:"205121038@nitt.edu",
+      password: "456"
+    });
+    dbFunct.storeUser(205121038,"Deepak Singh",100000);
+    UserDummy.create({
+      userID: 20512143,
+      userName: "Himanshu Sathe",
+      userEmail:"205121043@nitt.edu",
+      password: "789"
+    });
+    dbFunct.storeUser(205121043,"Himanshu Sathe",100000);
+    UserDummy.create({
+      userID: 001,
+      userName: "Admin A",
+      userEmail:"001@nitt.edu",
+      password: "1234"
+    });
+    UserDummy.create({
+      userID: 002,
+      userName: "Admin B",
+      userEmail:"002@nitt.edu",
+      password: "4567"
+    });
+    UserDummy.create({
+      userID: 003,
+      userName: "Admin C",
+      userEmail:"003@nitt.edu",
+      password: "7890"
+    });*/
     //dbFunct.storeStockHold(2001,1001,2000,50);
     //Stocks Acc Cement,Reliance,Dabur 1001 1002 1003
     //User Admin A,Admin B,Admin C, 2001 2002 2003
@@ -210,9 +322,6 @@ app.listen(3000, async()=> {
     dbFunct.storeStock(1001,"Acc Cement",100,"Nhi bataunga");
     dbFunct.storeStock(1002,"Reliance",150,"Nhi bataunga");
     dbFunct.storeStock(1003,"Dabur",200,"Nhi bataunga");
-*/});
+*/
+});
   
- /*
- app.listen(3000,()=>{
-   console.log(Date.getDate());
- })*/
