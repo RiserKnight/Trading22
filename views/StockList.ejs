@@ -1,0 +1,64 @@
+<%- include('partials/header') %>
+<%- include('partials/nav.ejs',{userFund:userFund}); %>
+<%- include('partials/sidebar.ejs',{userName:userName}); %>
+     
+<section>
+    <section class="main-content">
+    
+        <div class="row">
+        <div class="col-md-9">
+ <!-- # 2 All Market start -->
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading"><b>All Stocks</b>
+                                       
+                                 <a data-perform="panel-collapse" data-toggle="collapse" title="" class="pull-right" data-original-title="Open/ Close Panel">
+                                 </a>
+                                    </div>
+                                    <div class="collapse in">
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">All Stocks at a glimpse |
+                                                <small>Trade All Availble Stocks</small>
+                                            </div>
+                                            <div class="panel-body">
+                                                <table id="datatable1" class="table table-striped table-hover">
+                                                    <thead>
+                                                        <tr>
+                                                            <th class="tableSmallPad">Name Of Stock</th>
+                                                            <th class="tableSmallPad">Price</th>
+                                                           
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <% stocks.forEach(function(stock){ %>
+                                                        <!-- Stock 1 Starts Here -->
+                                                        <tr class="clickable-row" data-href="index.html">
+                                                            
+                                                            <td class="tableSmallPad">
+                                                                
+                                                                <label class="label_item" for="radio1"> <i class="fa fa-star text-c-blue"></i> 
+                                                                </label> <a href="/stock/<%=stock.stockID%>"><%=stock.stockName%></a>
+                                                            </td>
+                                                            <td class="tableSmallPad"><%=stock.ltp%></td>
+                                    
+                                                        </tr>
+                                                        <!-- 1 Ends Here -->
+                                                        <%});%>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div class="panel-footer"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </section>
+            </section>
+
+
+</body>
+
+</html>

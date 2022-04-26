@@ -3,7 +3,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
 const dbFunct = require(__dirname+"/database.js");
-const Date = require(__dirname+"/date.js");
+const dateFunct = require(__dirname+"/date.js");
 const {sequelize,UserDummy}=require('./models');
 const { delBuyOrder } = require("./database");
 const cookieParser = require('cookie-parser');
@@ -30,7 +30,7 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: {
-        expires: 3600000
+        expires: 3600000000
     }
 }));
 
@@ -38,12 +38,12 @@ app.use(session({
 // This usually happens when you stop your express server after login, your cookie still remains saved in the browser.
 app.use((req, res, next) => {
   if (req.cookies.user_sid && !req.session.user) {
-      res.clearCookie('user_sid');        
+      //res.clearCookie('user_sid');        
   }
   next();
 });
 
-var userContent = {userID: 0,userName: ' ',userEmail:' ', status: false}; 
+const userContent = {userID: 0,userName: ' ',userEmail:' ', status: false}; 
 
 // middleware function to check for logged-in users
 var sessionChecker = (req, res, next) => {
@@ -68,7 +68,11 @@ app.get("/Dashboard",async(req,res)=>{
     userContent.userEmail = req.session.user.userEmail;
     userContent.userName = req.session.user.userName; 
     console.log(JSON.stringify(req.session.user)); 
-    res.render(__dirname+"/views/dashboard",{stocks:stocks,user: userContent.userID,userName: userContent.userName});
+    const userFund = await dbFunct.getUser(userContent.userID);
+    console.log(userContent.userID);
+    console.log(userFund);
+    res.render("StockList",{userName:userContent.userName,stocks:stocks,userFund:userFund.funds});
+    
     } else {
         res.redirect('/login');
     }
@@ -80,11 +84,13 @@ app.get("/stock/:stockID",async(req,res)=>{
 const bOrders = await dbFunct.getBuyOrders(req.params.stockID);
 const sOrders = await dbFunct.getSellOrders(req.params.stockID);
 const stock=await dbFunct.getStock(req.params.stockID);
+const userFund = await dbFunct.getUser(userContent.userID);
 const LTP = stock.ltp;
 const stockName = stock.stockName;
 
 res.render(__dirname+"/views/stockScreen",
-{stockID:req.params.stockID,stockName: stockName,LTP:LTP,buyOrders:bOrders,sellOrders:sOrders,userName: userContent.userName})
+{stockID:req.params.stockID,stockName: stockName,LTP:LTP,userFund:userFund.funds,
+  buyOrders:bOrders,sellOrders:sOrders,userName: userContent.userName})
 });
 
 app.get('/users',async(req,res)=>{
@@ -93,31 +99,46 @@ app.get('/users',async(req,res)=>{
 });
 
 app.post("/buyOrder/:stockID",async(req,res)=>{
-  const amount=req.body.totalBP;
+console.log("Session content: \n"+JSON.stringify(req.session.user));
+
+  const stockID=parseInt(req.params.stockID);
+  const amount=parseInt(req.body.totalBP);
+
   const user=await dbFunct.getUser(userContent.userID);
+  
   if(user.funds>=amount){
   await dbFunct.storeBuyOrder(userContent.userID,req.params.stockID,req.body.unit,req.body.price);
   }
   const bOrders = await dbFunct.getBuyOrders(stockID);
   const sOrders = await dbFunct.getSellOrders(stockID);
+  if(bOrders[0]&&sOrders[0]){
   if(bOrders[0].price>=sOrders[0].price)
   res.redirect("/transaction/"+stockID);
   else
   res.redirect("/stock/"+stockID);
+  }
+  else
+  res.redirect("/stock/"+stockID);
+  
 });
 
 app.post("/sellOrder/:stockID",async(req,res)=>{
   const stockID=req.params.stockID;
+  const quantity=parseInt(req.body.unit);
   const Q= await dbFunct.getUserStockQ(userContent.userID,stockID);
-  if(Q>=req.body.unit){
+  if(Q>=quantity){
   await dbFunct.storeSellOrder(userContent.userID,stockID,req.body.unit,req.body.price);
   }
   const bOrders = await dbFunct.getBuyOrders(stockID);
   const sOrders = await dbFunct.getSellOrders(stockID);
-  if(bOrders[0].price>=sOrders[0].price)
-  res.redirect("/transaction/"+stockID);
-  else
-  res.redirect("/stock/"+stockID);
+  if(bOrders[0]&&sOrders[0]){
+    if(bOrders[0].price>=sOrders[0].price)
+    res.redirect("/transaction/"+stockID);
+    else
+    res.redirect("/stock/"+stockID);
+    }
+    else
+    res.redirect("/stock/"+stockID);
 });
 
 
@@ -129,7 +150,10 @@ app.route("/login")
 })
 .post((req, res) => {
     var userID = req.body.userID,
-        password = req.body.password;
+       password = req.body.password;
+    //    var userID = 205121002,
+      //  password = "123";
+
 
     UserDummy.findOne({ where: { userID: userID } }).then(function (user) {
 
@@ -247,7 +271,7 @@ app.get("/transaction/:stockID",async(req,res)=>{
 
     //update stock History
     
-    console.log(await storeStockHistory(stockID,bP,timeStamp));
+    console.log(await dbFunct.storeStockHistory(stockID,bP,timeStamp));
 
     // check bQ,oQ, update buy order
     if(bQ==oQ){
@@ -272,10 +296,10 @@ app.listen(3000, async()=> {
     console.log("Server started on port 3000.");
     await sequelize.authenticate();
     console.log("db connected");
-    console.log(Date.getDate());
+    //console.log(dateFunct.getDate());
 
     //Run once
- /*
+    /*
     dbFunct.storeStock(1001,"Acc Cement",100,"Nhi bataunga");
     dbFunct.storeStock(1002,"Reliance",150,"Nhi bataunga");
     dbFunct.storeStock(1003,"Dabur",200,"Nhi bataunga");
@@ -335,8 +359,6 @@ app.listen(3000, async()=> {
 
     //Stocks Acc Cement,Reliance,Dabur 1001 1002 1003
     //User Admin A,Admin B,Admin C, 2001 2002 2003
-
-    
 
 });
   
