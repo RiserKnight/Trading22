@@ -3,6 +3,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
 const dbFunct = require(__dirname+"/database.js");
+const createFunct = require(__dirname+"/createUser.js");
 const dateFunct = require(__dirname+"/date.js");
 const {sequelize,UserDummy}=require('./models');
 const { delBuyOrder } = require("./database");
@@ -30,18 +31,20 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: {
-        expires: 3600000000
+      httpOnly: true,
+      expires: new Date(Date.now() + 3600000),
+      maxAge: 1*60*60*1000
     }
 }));
 
 // This middleware will check if user's cookie is still saved in browser and user is not set, then automatically log the user out.
 // This usually happens when you stop your express server after login, your cookie still remains saved in the browser.
-app.use((req, res, next) => {
+/*app.use((req, res, next) => {
   if (req.cookies.user_sid && !req.session.user) {
-      //res.clearCookie('user_sid');        
+      res.clearCookie('user_sid');        
   }
   next();
-});
+});*/
 
 const userContent = {userID: 0,userName: ' ',userEmail:' ', status: false}; 
 
@@ -67,10 +70,10 @@ app.get("/Dashboard",async(req,res)=>{
     userContent.userID = req.session.user.userID; 
     userContent.userEmail = req.session.user.userEmail;
     userContent.userName = req.session.user.userName; 
-    console.log(JSON.stringify(req.session.user)); 
+    var hour = 3600000
+    req.session.cookie.expires = new Date(Date.now() + hour)
+    console.log("User Session DashBoard "+JSON.stringify(req.session.user)); 
     const userFund = await dbFunct.getUser(userContent.userID);
-    console.log(userContent.userID);
-    console.log(userFund);
     res.render("StockList",{userName:userContent.userName,stocks:stocks,userFund:userFund.funds});
     
     } else {
@@ -80,7 +83,8 @@ app.get("/Dashboard",async(req,res)=>{
 });
 
 app.get("/stock/:stockID",async(req,res)=>{
-
+  var hour = 3600000
+  req.session.cookie.expires = new Date(Date.now() + hour);
 const bOrders = await dbFunct.getBuyOrders(req.params.stockID);
 const sOrders = await dbFunct.getSellOrders(req.params.stockID);
 const stock=await dbFunct.getStock(req.params.stockID);
@@ -99,7 +103,6 @@ app.get('/users',async(req,res)=>{
 });
 
 app.post("/buyOrder/:stockID",async(req,res)=>{
-console.log("Session content: \n"+JSON.stringify(req.session.user));
 
   const stockID=parseInt(req.params.stockID);
   const amount=parseInt(req.body.totalBP);
@@ -172,7 +175,7 @@ app.route("/login")
     if (req.session.user && req.cookies.user_sid) {
     userContent.status = false; 
         res.clearCookie('user_sid');
-    console.log(JSON.stringify(userContent)); 
+    console.log("User Content Logout "+JSON.stringify(userContent)); 
         res.redirect('/');
     } else {
         res.redirect('/login');
@@ -180,6 +183,7 @@ app.route("/login")
   });
 
 app.get("/transaction/:stockID",async(req,res)=>{
+  console.log("\n\n**********Transaction Route**********\n\n");
   const stockID=req.params.stockID;
   const bOrders = await dbFunct.getBuyOrders(stockID);
   const sOrders = await dbFunct.getSellOrders(stockID);
@@ -191,22 +195,30 @@ app.get("/transaction/:stockID",async(req,res)=>{
     const sID=sOrders[0].id;
     const bUID=bOrders[0].userID;
     const sUID=sOrders[0].userID;
-    console.log(bOrders[0]);
-    console.log(sOrders[0]);
+    console.log("Buy Order: "+JSON.stringify(bOrders[0]));
+    console.log("Sell Order: "+JSON.stringify(sOrders[0]));
+    console.log("Buy Quantity: "+bQ);
+    console.log("Sell Quantity: "+sQ);
+    console.log("Buy Order ID "+bID);
+    console.log("Sell Order ID "+sID);
+    console.log("Buyer ID "+bUID);
+    console.log("Seller ID "+sUID);
+    console.log("Buying Price "+bP);
     
-    let oQ;
+    let oQ=0;
     if(bQ>=sQ){
-     oQ=bQ-sQ;
+     oQ=sQ;
      }
      else if(sQ>bQ){
-     oQ=sQ-bQ;
+     oQ=bQ;
      }
-    
+    console.log("Obsolute Quantity"+oQ);
      const amount=oQ*bP;
      const fee=0.005*amount;
      const bAmount=amount+fee;
      const sAmount=amount-fee;
-    
+     console.log("Buyer Amount "+bAmount);
+     console.log("Seller Amount "+sAmount);
      const bUser=await dbFunct.getUser(bUID);
      //checking buyer has enough funds or not
      if(bUser.funds<bAmount){
@@ -221,40 +233,45 @@ app.get("/transaction/:stockID",async(req,res)=>{
       res.redirect("/stock/"+stockID);
     }
     
-    const bFunds=bUser.funds-bAmount;
-    const sUser=await dbFunct.getUser(bUID);
-    const sFunds=sUser.funds+sAmount;
+    const bFunds=parseInt(bUser.funds)-bAmount;
+    const sUser=await dbFunct.getUser(sUID);
+    const sFunds=parseInt(sUser.funds)+sAmount;
 
     const buyerStock= await dbFunct.getUserStock(bUID,stockID);
-      const preAvgPrice=buyerStock.avgPrice;
-      const preQ=buyerStock.quantity;
-      const avgPrice=(preQ*preAvgPrice+amount)/(preQ+oQ);
+      const preAvgPrice=parseInt(buyerStock.avgPrice);
+      const preQ=parseInt(buyerStock.quantity);
+      const avgPrice=parseInt((preQ*preAvgPrice+amount)/(preQ+oQ));
     
-      const sellerStock= await dbFunct.getUserStock(bUID,stockID);
-      const sellerAvgPrice=sellerStock.avgPrice;
-      const sellerQ=sellerStock.quantity-oQ;
+      const sellerStock= await dbFunct.getUserStock(sUID,stockID);
+      const sellerAvgPrice=parseInt(sellerStock.avgPrice);
+      const sellerQ=parseInt(sellerStock.quantity)-oQ;
     
     try{
          //checking buyer has stocks or not
     result=await dbFunct.checkUserStock(bUID,stockID);
     //buyer stock
     if(result){
-      await dbFunct.updateStockHold(bUID,stockID,oQ,avgPrice);
+      console.log("Update Buyer Stock Hold Quantity "+(preQ+oQ));
+      await dbFunct.updateStockHold(bUID,stockID,preQ+oQ,avgPrice);
       //update + update avgPrice
     } 
     else{
       //create
+      console.log("Create Buyer Stock Hold Quantity "+(preQ+oQ));
       console.log(await dbFunct.storeStockHold(bUID,stockID,oQ,bP));
     }
     //seller stock deduct
-    await dbFunct.updateStockHold(bUID,stockID,sellerQ,sellerAvgPrice);
-    
+    await dbFunct.updateStockHold(sUID,stockID,sellerQ,sellerAvgPrice);
+    console.log("Update Seller Hold ID,Quantity,sellerAvgPrice "+sUID
+    +" "+sellerQ+" "+sellerAvgPrice);
+
     //buyer fund deduct
     await dbFunct.updateFunds(bUID,bFunds);
-     
+    console.log("Buyer ID,Fund "+bUID+" "+bFunds);
+
     //seller fund add
-    await dbFunct.updateFunds(bUID,sFunds);
-     
+    await dbFunct.updateFunds(sUID,sFunds);
+    console.log("Seller ID,Fund "+sUID+" "+sFunds);
      //add fee
 
     }
@@ -299,66 +316,66 @@ app.listen(3000, async()=> {
     //console.log(dateFunct.getDate());
 
     //Run once
-    /*
-    dbFunct.storeStock(1001,"Acc Cement",100,"Nhi bataunga");
-    dbFunct.storeStock(1002,"Reliance",150,"Nhi bataunga");
-    dbFunct.storeStock(1003,"Dabur",200,"Nhi bataunga");
-    UserDummy.create({
+  /*
+    //Stocks
+    await dbFunct.storeStock(1001,"Acc Cement",100,"Nhi bataunga");
+    await dbFunct.storeStock(1002,"Reliance",150,"Nhi bataunga");
+    await dbFunct.storeStock(1003,"Dabur",200,"Nhi bataunga");
+
+    //Users
+    await UserDummy.create({
       userID: 205121002,
       userName: "Aayush Gupta",
       userEmail:"205121002@nitt.edu",
       password: "123"
     });
-    dbFunct.storeUser(205121002,"Aayush Gupta",100000);
-    UserDummy.create({
+    await createFunct.createUser(205121002,"Aayush Gupta");
+    await UserDummy.create({
       userID: 205121038,
       userName: "Deepak Singh",
       userEmail:"205121038@nitt.edu",
       password: "456"
     });
-    dbFunct.storeUser(205121038,"Deepak Singh",100000);
-    UserDummy.create({
+    await createFunct.createUser(205121038,"Deepak Singh");
+
+   */
+  
+   /*
+     await UserDummy.create({
       userID: 205121043,
       userName: "Himanshu Sathe",
       userEmail:"205121043@nitt.edu",
       password: "789"
     });
-    dbFunct.storeUser(205121043,"Himanshu Sathe",100000);
-    UserDummy.create({
+    await createFunct.createUser(205121043,"Himanshu Sathe");
+
+    await UserDummy.create({
       userID: 2001,
       userName: "Admin A",
       userEmail:"001@nitt.edu",
       password: "1234"
     });
-    dbFunct.storeUser(2001,"Admin A",100000000);
+    await createFunct.createUser(2001,"Admin A");
   
-    UserDummy.create({
+    await UserDummy.create({
       userID: 2002,
       userName: "Admin B",
       userEmail:"002@nitt.edu",
       password: "4567"
     });
-    dbFunct.storeUser(2002,"Admin B",100000000);
+    await createFunct.createUser(2002,"Admin B");
     
-    UserDummy.create({
+    await UserDummy.create({
       userID: 2003,
       userName: "Admin C",
       userEmail:"003@nitt.edu",
       password: "7890"
     });
-    dbFunct.storeUser(2003,"Admin C",100000000);
-
-    dbFunct.storeStockHold(2001,1001,2000,100);
-    dbFunct.storeStockHold(2002,1001,1000,110);
-    dbFunct.storeStockHold(2003,1001,500,90);
-    dbFunct.storeStockHold(205121002,1001,200,100);
-    dbFunct.storeStockHold(205121038,1001,200,100);
-    dbFunct.storeStockHold(205121043,1001,200,100);
-     */
-
+    await createFunct.createUser(2003,"Admin C");
+*/
 
     //Stocks Acc Cement,Reliance,Dabur 1001 1002 1003
     //User Admin A,Admin B,Admin C, 2001 2002 2003
-
+    //stockHold userID,stockID,quantity,avgPrice
 });
   

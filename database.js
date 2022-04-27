@@ -150,7 +150,7 @@ exports.getUser=async(userID)=>{
                 const demo=await User.findOne({
                     where:{userID:userID}
                 });
-                console.log("\nFrom getUser: \n"+JSON.stringify(demo.dataValues));
+             
                return demo.dataValues;
                
                 } 

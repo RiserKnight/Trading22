@@ -6,7 +6,8 @@ module.exports ={
     "password": process.env.DB_PASS,
     "database": "Trading",
     "host": "127.0.0.1",
-    "dialect": "postgres"
+    "dialect": "postgres",
+    "logging": false
   },
   "test": {
     "username": "postgres",
