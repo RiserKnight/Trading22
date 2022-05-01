@@ -1,4 +1,4 @@
-const {sequelize,TransactionHistory,User,Stock,Events,Favourites,SellOrder,BuyOrder,StockHistory,StockHold}=require('./models')
+const {sequelize,TransactionHistory,User,Stock,Event,Favourites,SellOrder,BuyOrder,StockHistory,StockHold}=require('./models')
 
 
 /*            ****   ***********Create Operations*****************                     */
@@ -24,10 +24,10 @@ exports.storeStock=async(stockID,stockName,ltp,description)=>{
     return "Stock Sucessfully stored";
 }
 
-exports.storeEvent=async(timeStamp,timeValue,description)=>{
+exports.storeEvent=async(eventID,timeStamp,heading,description)=>{
   
     try {
-        const demoUser=await Events.create({timeStamp,timeValue,description})
+        await Event.create({eventID,timeStamp,heading,description})
     } catch (err) {
         console.log(err);
     }
@@ -37,7 +37,7 @@ exports.storeEvent=async(timeStamp,timeValue,description)=>{
 exports.storeFav=async(userID,stockID)=>{
 
     try {
-        const demoUser=await Favourites.create({userID,stockID})
+       await Favourites.create({userID,stockID})
     } catch (err) {
         console.log(err);
     }
@@ -136,9 +136,10 @@ exports.getStock=async(stockID)=>{
             const demo=await Stock.findOne({
                 where:{stockID:stockID}
             });
-            
-           return demo.dataValues;
-           
+            if(demo)             
+               return demo.dataValues;
+               else
+               return 0;
             } 
               catch(err){
                 console.log(err);
@@ -149,6 +150,20 @@ exports.getUser=async(userID)=>{
             try{
                 const demo=await User.findOne({
                     where:{userID:userID}
+                });
+               if(demo)             
+               return demo.dataValues;
+               else
+               return 0
+                } 
+                  catch(err){
+                    console.log(err);
+                        }
+        }
+        exports.getEvent=async(eventID)=>{
+            try{
+                const demo=await Event.findOne({
+                    where:{eventID:eventID}
                 });
                if(demo)             
                return demo.dataValues;

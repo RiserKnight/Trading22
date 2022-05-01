@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Favourites extends Model {
+  class Favourite extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  Favourites.init({
+  Favourite.init({
    userID: {type:DataTypes.INTEGER,allowNull:false,validate:{
         notNull:{msg:'User  must have a id'},
         notEmpty:{msg:'id must not be empty'}
@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
 
   }, {
     sequelize,
-    modelName: 'Favourites',
+    modelName: 'Favourite',
   });
-  return Favourites;
+  return Favourite;
 };

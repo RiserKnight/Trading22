@@ -5,11 +5,9 @@ const ejs = require("ejs");
 const dbFunct = require(__dirname+"/database.js");
 const createFunct = require(__dirname+"/createUser.js");
 const dateFunct = require(__dirname+"/date.js");
-const {sequelize,User}=require('./models');
-const { delBuyOrder } = require("./database");
+const {sequelize}=require('./models');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
-const http = require("http");
 const axios = require('axios');
 require('dotenv').config();
 
@@ -59,6 +57,7 @@ var sessionChecker = (req, res, next) => {
       next();
   }    
 };
+const randText="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.";
 
 app.get("/",(req,res)=>{
   res.sendFile(__dirname+"/views/Main.html");
@@ -328,88 +327,36 @@ app.get("/transaction/:stockID",async(req,res)=>{
   }
   res.redirect("/stock/"+stockID);
 });
+app.get("/news",(req,res)=>{
 
+});
 app.listen(3000, async()=> {
     console.log("Server started on port 3000.");
     await sequelize.authenticate();
     console.log("db connected");
 
-        let userNew=await dbFunct.getUser(2001);
-        if(!userNew){
-          await dbFunct.storeUser(2001,"Admin A",10000000);
+        const userNew1=await dbFunct.getUser(2001);
+        if(!userNew1){
+          await dbFunct.storeUser(2001,"Trading Admin A",10000000);
+          await dbFunct.storeUser(2002,"Trading Admin B",10000000);
+          await dbFunct.storeUser(2003,"Trading Admin C",10000000);
         }
-         userNew=await dbFunct.getUser(2002);
-        if(!userNew){
-          await dbFunct.storeUser(2002,"Admin B",10000000);
+        const stockNew1=await dbFunct.getStock(1001);
+        if(!stockNew1){
+          await dbFunct.storeStock(1001,"Acc Cement",100,"Nhi bataunga");
+          await dbFunct.storeStock(1002,"Reliance",150,"Nhi bataunga");
+          await dbFunct.storeStock(1003,"Dabur",200,"Nhi bataunga");
         }
-        userNew=await dbFunct.getUser(2001);
-        if(!userNew){
-          await dbFunct.storeUser(2003,"Admin C",10000000);
-        }
-    //console.log(dateFunct.getDate());
-
-    //Run once
-  /*
-    //Stocks
-    await dbFunct.storeStock(1001,"Acc Cement",100,"Nhi bataunga");
-    await dbFunct.storeStock(1002,"Reliance",150,"Nhi bataunga");
-    await dbFunct.storeStock(1003,"Dabur",200,"Nhi bataunga");
-
-    //Users
-    await UserDummy.create({
-      userID: 205121002,
-      userName: "Aayush Gupta",
-      userEmail:"205121002@nitt.edu",
-      password: "123"
-    });
-    await createFunct.createUser(205121002,"Aayush Gupta");
-    await UserDummy.create({
-      userID: 205121038,
-      userName: "Deepak Singh",
-      userEmail:"205121038@nitt.edu",
-      password: "456"
-    });
-    await createFunct.createUser(205121038,"Deepak Singh");
-
-   */
-  
-   /*
-     await UserDummy.create({
-      userID: 205121043,
-      userName: "Himanshu Sathe",
-      userEmail:"205121043@nitt.edu",
-      password: "789"
-    });
-    await createFunct.createUser(205121043,"Himanshu Sathe");
-
-    await UserDummy.create({
-      userID: 2001,
-      userName: "Admin A",
-      userEmail:"001@nitt.edu",
-      password: "1234"
-    });
-    await createFunct.createUser(2001,"Admin A");
-  
-    await UserDummy.create({
-      userID: 2002,
-      userName: "Admin B",
-      userEmail:"002@nitt.edu",
-      password: "4567"
-    });
-    await createFunct.createUser(2002,"Admin B");
-    
-    await UserDummy.create({
-      userID: 2003,
-      userName: "Admin C",
-      userEmail:"003@nitt.edu",
-      password: "7890"
-    });
-    await createFunct.createUser(2003,"Admin C");
-*/
-
-    //Stocks Acc Cement,Reliance,Dabur 1001 1002 1003
-    //User Admin A,Admin B,Admin C, 2001 2002 2003
-    //stockHold userID,stockID,quantity,avgPrice
+        const eventNew1=await dbFunct.getEvent(3001);
+        if(!eventNew1){
+          await dbFunct.storeEvent(3001,1641011400000,"Ye hai melody 1 Jan",randText);
+          await dbFunct.storeEvent(3002,1641097800000,"Ye hai melody 2 Jan",randText);
+          await dbFunct.storeEvent(3003,1641184200000,"Ye hai melody 3 Jan",randText);
+          await dbFunct.storeEvent(3004,1641270600000,"Ye hai melody 4 Jan",randText);
+          await dbFunct.storeEvent(3005,1641357000000,"Ye hai melody 5 Jan",randText);
+          await dbFunct.storeEvent(3006,1654057800000,"Ye hai melody 1 June",randText);
+        } 
+       
    
   });
   

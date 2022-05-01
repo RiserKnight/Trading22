@@ -9,7 +9,20 @@ module.exports = {
         primaryKey: true,
         type: DataTypes.INTEGER
       },
+      eventID:{
+        type:DataTypes.INTEGER,
+        allowNull:false,
+        primaryKey:true,
+        unique:true,
+          validate:{
+            notNull:{msg:'Ebent must have a ID'},
+            notEmpty:{msg:'ID must not be empty'}
+          }
+      },
         timeStamp:{
+          type:DataTypes.STRING
+        },
+        heading:{
           type:DataTypes.STRING
         },
         description:{
