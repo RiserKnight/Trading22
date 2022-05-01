@@ -5,10 +5,12 @@ const ejs = require("ejs");
 const dbFunct = require(__dirname+"/database.js");
 const createFunct = require(__dirname+"/createUser.js");
 const dateFunct = require(__dirname+"/date.js");
-const {sequelize,UserDummy}=require('./models');
+const {sequelize,User}=require('./models');
 const { delBuyOrder } = require("./database");
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
+const http = require("http");
+const axios = require('axios');
 require('dotenv').config();
 
 
@@ -28,30 +30,30 @@ app.use(cookieParser());
 app.use(session({
     key: 'user_sid',
     secret: process.env.SECRET,
-    resave: false,
+    resave: true,
     saveUninitialized: false,
     cookie: {
+      path: '/',
       httpOnly: true,
-      expires: new Date(Date.now() + 3600000),
       maxAge: 1*60*60*1000
     }
 }));
 
 // This middleware will check if user's cookie is still saved in browser and user is not set, then automatically log the user out.
 // This usually happens when you stop your express server after login, your cookie still remains saved in the browser.
-/*app.use((req, res, next) => {
+app.use((req, res, next) => {
   if (req.cookies.user_sid && !req.session.user) {
       res.clearCookie('user_sid');        
   }
   next();
-});*/
+});
 
-const userContent = {userID: 0,userName: ' ',userEmail:' ', status: false}; 
+let userContent = {userID: 0,userName: ' ',userEmail:' ', status: false}; 
 
 // middleware function to check for logged-in users
 var sessionChecker = (req, res, next) => {
   if (req.session.user && req.cookies.user_sid) {
-  
+      
       res.redirect("/");
   } else {
       next();
@@ -63,8 +65,9 @@ app.get("/",(req,res)=>{
 });
 
 app.get("/Dashboard",async(req,res)=>{
-
+   
   if (req.session.user && req.cookies.user_sid) {
+    console.log("Auto LogOut Time: -"+req.session.cookie.expires.toLocaleString('en-US', {timeZone: "Asia/Kolkata"}));
     const stocks= await dbFunct.getStocks();
     userContent.status = true; 
     userContent.userID = req.session.user.userID; 
@@ -154,21 +157,38 @@ app.route("/login")
 .post((req, res) => {
     var userID = req.body.userID,
        password = req.body.password;
-    //    var userID = 205121002,
-      //  password = "123";
+      const url ="https://main.pcc.events/centralized/"+userID+"/"+password;
 
-
-    UserDummy.findOne({ where: { userID: userID } }).then(function (user) {
-
-        if (!user) {
-            res.redirect("/login");
-        } else if (!user.validPassword(password)) {
-            res.redirect("/login");
-        } else {
-            req.session.user = user.dataValues;
-            res.redirect("/Dashboard");
+    
+    axios
+    .post(url)
+    .then(async(response)=> {
+      console.log(`statusCode: ${response.status}`);
+      const Data = JSON.parse(response.data)
+      console.log("User: "+userID+" Password: "+password+" Data: ");
+      console.log(Data);
+      if(Data.status){
+        req.session.user={
+          userID:Data.rollNo,
+          userName:Data.userName,
+          userEmail:Data.email,
+          status:Data.status
         }
+        userContent=req.session.user;
+        const userNew=await dbFunct.getUser(userID);
+        if(!userNew){
+          console.log(await createFunct.createUser(userContent.userID,userContent.userName));
+        }
+        res.redirect("/Dashboard");
+      }
+      else
+      res.redirect("/login");
+    })
+    .catch(error => {
+      console.error(error);
     });
+
+  
 });
    // route for user logout
    app.get('/logout', (req, res) => {
@@ -313,6 +333,19 @@ app.listen(3000, async()=> {
     console.log("Server started on port 3000.");
     await sequelize.authenticate();
     console.log("db connected");
+
+        let userNew=await dbFunct.getUser(2001);
+        if(!userNew){
+          await dbFunct.storeUser(2001,"Admin A",10000000);
+        }
+         userNew=await dbFunct.getUser(2002);
+        if(!userNew){
+          await dbFunct.storeUser(2002,"Admin B",10000000);
+        }
+        userNew=await dbFunct.getUser(2001);
+        if(!userNew){
+          await dbFunct.storeUser(2003,"Admin C",10000000);
+        }
     //console.log(dateFunct.getDate());
 
     //Run once
@@ -377,5 +410,6 @@ app.listen(3000, async()=> {
     //Stocks Acc Cement,Reliance,Dabur 1001 1002 1003
     //User Admin A,Admin B,Admin C, 2001 2002 2003
     //stockHold userID,stockID,quantity,avgPrice
-});
+   
+  });
   

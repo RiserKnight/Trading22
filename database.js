@@ -150,9 +150,10 @@ exports.getUser=async(userID)=>{
                 const demo=await User.findOne({
                     where:{userID:userID}
                 });
-             
+               if(demo)             
                return demo.dataValues;
-               
+               else
+               return 0
                 } 
                   catch(err){
                     console.log(err);
