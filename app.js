@@ -327,9 +327,30 @@ app.get("/transaction/:stockID",async(req,res)=>{
   }
   res.redirect("/stock/"+stockID);
 });
-app.get("/news",(req,res)=>{
+app.get("/news",async(req,res)=>{
+  let events=[];
 
+  const eventsRaw = await dbFunct.getEvents();
+  eventsRaw.forEach((event)=>{
+   const eDate = new Date();
+   eDate.setTime(event.timeStamp);
+   const timeStamp=eDate.toLocaleDateString('en-us', { weekday:"long", year:"numeric", month:"short", day:"numeric"});
+   events.push({
+    eventID: event.eventID,
+    heading: event.heading,
+    timeStamp: timeStamp}); 
+  });
+  console.log(events);
+  res.render("Headlines",{events:events});
 });
+
+app.get("/news/:eventID",async(req,res)=>{
+const eventID=req.params.eventID;
+const event = await dbFunct.getEvent(eventID);
+console.log(event);
+res.render("news");
+});
+
 app.listen(3000, async()=> {
     console.log("Server started on port 3000.");
     await sequelize.authenticate();

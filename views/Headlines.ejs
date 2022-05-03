@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device=width, initial-scale=1.0">
+		<title>PCC's Trade News</title>
+		<link rel="stylesheet" href="/css/bootstrap.min.css">
+		<link rel="stylesheet" href="/css/NewsStyle.css">
+	</head>
+
+	<body>
+
+		<div class="container">
+			<div class="logo-wrapper d-flex align-items-center">
+				<h1>
+					<a >
+						Trading Latest Updates
+					</a>
+				</h1>
+			</div>
+		 </div>
+
+			<div class="container-fluid menu">
+				<div class="container">
+					<div class="d-flex menu-items">
+						<div class="active">
+							<a >Trading News at a Glance, For better trading</a>
+					</div>
+				</div>
+			</div>
+		 </div>
+
+	
+
+
+			<div class="container section">
+				<div class="row">
+					<div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+						<div class="mb-4 mt-4">
+							<div class="section-title">
+								<span>Latest Updates</span>
+							</div>
+
+							<% events.forEach(function(event){ %>
+								<div class="row mb-3 bb-1 pt-0">
+									<div class="col-md-30 col-lg-30 col-sm-20 col-xs-20">
+										<h5>
+											<a href="/news/<%=event.eventID%>">
+												<%=event.heading%>
+											</a>
+										</h5>
+										
+										<small><%=event.timeStamp%></small>
+									</div>
+								</div>
+							<%});%>
+
+
+							
+
+
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+		<script type="text/javascript">
+			window.onscroll = function(){
+				setSticky();
+			}
+
+			navbar = document.getElementsByClassName('menu')[0];
+			var sticky = navbar.offsetTop;
+			function setSticky(){
+				if(window.pageYOffset >= sticky){
+					navbar.classList.add('sticky');
+				}else{
+					navbar.classList.remove('sticky');
+				}
+			}
+		</script>
+
+
+	</body>
+
+</html>

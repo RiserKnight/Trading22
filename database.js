@@ -160,7 +160,7 @@ exports.getUser=async(userID)=>{
                     console.log(err);
                         }
         }
-        exports.getEvent=async(eventID)=>{
+exports.getEvent=async(eventID)=>{
             try{
                 const demo=await Event.findOne({
                     where:{eventID:eventID}
@@ -190,6 +190,22 @@ exports.getStocks=async()=>{
                         console.log(err);
                             }
             }
+exports.getEvents=async()=>{
+                let events=[];
+                
+                    try{
+                        const demo=await Event.findAll({
+                        });
+                        demo.forEach((event)=>{
+                            events.push(event.dataValues);
+                        });
+                        return events;
+                       
+                        } 
+                          catch(err){
+                            console.log(err);
+                                }
+}
 exports.checkUserID=async(userID)=>{
                 try{
                     let count=0
