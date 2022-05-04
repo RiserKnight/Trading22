@@ -19,7 +19,7 @@ app.use(bodyParser.urlencoded({
   extended: true
 }));
 app.use(bodyParser.json());
-
+app.set('port', 4321);
 
 // initialize cookie-parser to allow us access the cookies stored in the browser. 
 app.use(cookieParser());
@@ -52,7 +52,7 @@ let userContent = {userID: 0,userName: ' ',userEmail:' ', status: false};
 var sessionChecker = (req, res, next) => {
   if (req.session.user && req.cookies.user_sid) {
       
-      res.redirect("/");
+      res.redirect("/Dashboard");
   } else {
       next();
   }    
@@ -60,13 +60,13 @@ var sessionChecker = (req, res, next) => {
 const randText="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.";
 
 app.get("/",(req,res)=>{
-  res.sendFile(__dirname+"/views/Main.html");
+  res.render("main",{status:userContent.status})
 });
 
 app.get("/Dashboard",async(req,res)=>{
    
   if (req.session.user && req.cookies.user_sid) {
-    console.log("Auto LogOut Time: -"+req.session.cookie.expires.toLocaleString('en-US', {timeZone: "Asia/Kolkata"}));
+    
     const stocks= await dbFunct.getStocks();
     userContent.status = true; 
     userContent.userID = req.session.user.userID; 
@@ -74,6 +74,7 @@ app.get("/Dashboard",async(req,res)=>{
     userContent.userName = req.session.user.userName; 
     var hour = 3600000
     req.session.cookie.expires = new Date(Date.now() + hour)
+    console.log("Auto LogOut Time: -"+req.session.cookie.expires.toLocaleString('en-US', {timeZone: "Asia/Kolkata"}));
     console.log("User Session DashBoard "+JSON.stringify(req.session.user)); 
     const userFund = await dbFunct.getUser(userContent.userID);
     res.render("StockList",{userName:userContent.userName,stocks:stocks,userFund:userFund.funds});
@@ -154,9 +155,10 @@ app.route("/login")
     res.sendFile(__dirname + '/views/login.html');
 })
 .post((req, res) => {
-    var userID = req.body.userID,
-       password = req.body.password;
-      const url ="https://main.pcc.events/centralized/"+userID+"/"+password;
+   // var userID = req.body.userID,
+    //   password = req.body.password;
+    var userID=205121002,password="Innovac1998"  
+    const url ="https://main.pcc.events/centralized/"+userID+"/"+password;
 
     
     axios
@@ -340,19 +342,38 @@ app.get("/news",async(req,res)=>{
     heading: event.heading,
     timeStamp: timeStamp}); 
   });
-  console.log(events);
   res.render("Headlines",{events:events});
 });
 
 app.get("/news/:eventID",async(req,res)=>{
 const eventID=req.params.eventID;
 const event = await dbFunct.getEvent(eventID);
-console.log(event);
-res.render("news");
+const eDate = new Date();
+eDate.setTime(event.timeStamp);
+const timeStamp=eDate.toLocaleDateString('en-us', { weekday:"long", year:"numeric", month:"short", day:"numeric"});
+res.render("news",{heading:event.heading,timeStamp:timeStamp,description:event.description});
 });
 
-app.listen(3000, async()=> {
-    console.log("Server started on port 3000.");
+app.get("/portfolio",async(req,res)=>{
+  let stocks=[];
+  const userFund = await dbFunct.getUser(userContent.userID);
+  const stocksRaw= await dbFunct.getUserStocks(userContent.userID);
+
+for(a=0;a<stocksRaw.length;a++)
+{
+  stockName=await dbFunct.getStockName(stocksRaw[a].stockID);
+  stocks[a]={
+    stockID:stocksRaw[a].stockID,
+    stockName:stockName,
+    quantity:stocksRaw[a].quantity,
+    avgPrice:stocksRaw[a].avgPrice  
+  }
+}
+res.render("portfolio",{userName:userContent.userName,userFund:userFund.funds,stocks:stocks});
+});
+
+app.listen(app.get('port'), async()=> {
+    console.log(`Server started on port ${app.get('port')}`);
     await sequelize.authenticate();
     console.log("db connected");
 

@@ -14,13 +14,14 @@
         <ul>
             <li><a href="/Dashboard">Dashboard</a></li>
             <li><a href="#">Instructions</a></li>
-            <li><a href="#">Market</a></li>
             <li><a href="#">Leaderboard</a></li>
             <li><a href="#">Contact Us</a></li>
-            <li><a href="about_us.html">About Us</a></li>
         </ul>
-     
-        <a href="/login" class="btn">Login</a>    
+         <%if(status){%>
+         <a href="/logout" class="btn">Logout</a>    
+         <%}else{%>
+         <a href="/login" class="btn">Login</a>  
+         <%}%>
     </nav>
         
         <div class="content">

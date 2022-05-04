@@ -160,6 +160,17 @@ exports.getUser=async(userID)=>{
                     console.log(err);
                         }
         }
+exports.getStockName=async(stockID)=>{
+    try{
+        const demo=await Stock.findOne({
+            where:{stockID:stockID}
+        });
+        return demo.stockName;
+    }
+    catch(err){
+        console.log(err);
+            }
+}
 exports.getEvent=async(eventID)=>{
             try{
                 const demo=await Event.findOne({
@@ -192,11 +203,12 @@ exports.getStocks=async()=>{
             }
 exports.getEvents=async()=>{
                 let events=[];
-                
+                const curr = new Date().getTime();
                     try{
                         const demo=await Event.findAll({
                         });
                         demo.forEach((event)=>{
+                            if(event.timeStamp<curr)
                             events.push(event.dataValues);
                         });
                         return events;
@@ -243,6 +255,22 @@ exports.getUserStock=async(userID,stockID)=>{
                         });
                         
                         return demo;
+                       
+                        } 
+                          catch(err){
+                            console.log(err);
+                                }
+                }
+exports.getUserStocks=async(userID)=>{
+                    let stocks=[];
+                    try{
+                        const demo=await StockHold.findAll({
+                            where:{userID:userID}
+                        });
+                        demo.forEach((order)=>{
+                            stocks.push(order.dataValues);
+                        });
+                        return stocks;
                        
                         } 
                           catch(err){

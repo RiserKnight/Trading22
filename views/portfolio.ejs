@@ -1,0 +1,59 @@
+<%- include('partials/header') %>
+<%- include('partials/nav.ejs',{userFund:userFund}); %>
+<%- include('partials/sidebar.ejs',{userName:userName}); %>
+
+    <section>
+        <section class="main-content">
+            <h2> Portfolio </h2>
+            <!-- Portfolio -->
+            <div class="col-md-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4><b>Your Stocks</b></h4>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead id="stockNameRow">
+                                <tr>
+                                    <th style="color: rgb(95, 98, 95);">
+                                        <h4>Stock Name</h4>
+                                    </th>
+                                    <th style="color: rgb(95, 98, 95);">
+                                        <h4>Quantity</h4>
+                                    </th>
+                                    <th style="color: rgb(95, 98, 95);">
+                                        <h4>Average Price</h4>
+                                    </th>
+                                    <th style="color: rgb(95, 98, 95);">
+                                        <h4>Gain/Loss(%)</h4>
+                                    </th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <%stocks.forEach((stock)=>{%>
+                                <tr>
+                                    <td>
+                                        <h5> <b><%=stock.stockName%></b></h5>
+                                    </td>
+                                    <td>
+                                        <h5><%=stock.quantity%></h5>
+                                    </td>
+                                    <td>
+                                        <h5><%=stock.avgPrice%></h5>
+                                    </td>
+                                    <td>
+                                        <h5><i class="fa-caret-up"></i>+45%</h5>
+                                    </td>
+                                </tr>
+                                <%})%>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </section>
+    </section>
+
+    <%- include('partials/footer') %>

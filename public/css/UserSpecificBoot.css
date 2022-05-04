@@ -7817,7 +7817,14 @@ button.close {
 .visible-lg-inline-block {
     display: none !important;
 }
-
+.portfolio-header {
+    padding: 10px 5px;
+    border-bottom: 0.5px solid transparent;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    height: 50px;
+    width: auto;
+}
 @media (max-width: 767px) {
     .visible-xs {
         display: block !important;
