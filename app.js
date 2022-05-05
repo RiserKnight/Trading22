@@ -155,9 +155,9 @@ app.route("/login")
     res.sendFile(__dirname + '/views/login.html');
 })
 .post((req, res) => {
-   // var userID = req.body.userID,
-    //   password = req.body.password;
-    var userID=205121002,password="Innovac1998"  
+    var userID = req.body.userID,
+       password = req.body.password;
+    //var userID=205121002,password="Innovac1998"  
     const url ="https://main.pcc.events/centralized/"+userID+"/"+password;
 
     
